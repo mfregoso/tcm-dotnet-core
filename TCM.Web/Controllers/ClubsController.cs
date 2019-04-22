@@ -24,7 +24,7 @@ namespace TCM.Web.Controllers
             {
                 string formattedId = IdHelpers.FormatId(id);
                 ClubStatus clubStatus = ScraperService.GetClubStatus(formattedId);
-                if (clubStatus.IsActive)
+                if (clubStatus.Exists)
                 {
                     List<ClubPerformance> clubPerfHistory = ScraperService.GetClubPerformance(formattedId);
                     foreach(var club in clubPerfHistory)
@@ -35,7 +35,7 @@ namespace TCM.Web.Controllers
 
                 return clubStatus.ToString();
             }
-            else return new ClubStatus().ToString();
+            else return "Invalid ID!";
         }
     }
 }

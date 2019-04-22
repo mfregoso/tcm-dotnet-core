@@ -12,7 +12,7 @@ namespace TCM.Services
         public static ClubStatus GetClubStatus(string id)
         {
             string BaseUrl = "http://dashboards.toastmasters.org/ClubReport.aspx?id=";
-            var clubStatus = new ClubStatus();
+            var clubStatus = new ClubStatus() { Id = id };
 
             using (var client = new HttpClient())
             {
@@ -22,11 +22,10 @@ namespace TCM.Services
                     var parseHtml = new HtmlParser();
                     var dataTable = parseHtml.ParseDocument(clubReport);
                     var statusBox = dataTable.QuerySelector(".tabBody > center > span");
-                    if (statusBox == null) return clubStatus;
+                    if (statusBox == null || statusBox.TextContent.Contains("Suspended")) return clubStatus;
                     else
                     {
                         clubStatus.Exists = true;
-                        clubStatus.IsActive = !statusBox.TextContent.Contains("Suspended");
                         var dataColumn = dataTable.QuerySelectorAll("table.clubStatusChart")[1];
                         var dataRow = dataColumn.QuerySelectorAll("table tr")[1];
                         var data = dataRow.QuerySelectorAll("td.chart_table_big_numbers")[1];

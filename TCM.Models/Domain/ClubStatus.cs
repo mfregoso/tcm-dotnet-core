@@ -2,13 +2,13 @@
 {
     public class ClubStatus
     {
+        public string Id { get; set; }
         public bool Exists { get; set; }
-        public bool IsActive { get; set; }
         public int? MembershipCount { get; set; }
 
         public override string ToString()
         {
-            return "Exists: " + Exists + "\r\nActive: " + IsActive + "\r\nMembers: " + MembershipCount;
+            return "\r\nClub Id: " + Id + "\r\nExists: " + Exists + "\r\nMembers: " + MembershipCount;
         }
     }
 }
