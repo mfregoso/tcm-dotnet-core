@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TCM.Services;
 using TCM.Services.Utils;
-using TCM.Models;
+using TCM.Models.Domain;
+using System.Collections.Generic;
 
 namespace TCM.Web.Controllers
 {
@@ -22,8 +23,17 @@ namespace TCM.Web.Controllers
             if (validId)
             {
                 string formattedId = IdHelpers.FormatId(id);
-                ClubStatus currMembers = ScraperService.GetClubStatus(formattedId);
-                return currMembers.ToString();
+                ClubStatus clubStatus = ScraperService.GetClubStatus(formattedId);
+                if (clubStatus.IsActive)
+                {
+                    List<ClubPerformance> clubPerfHistory = ScraperService.GetClubPerformance(formattedId);
+                    foreach(var club in clubPerfHistory)
+                    {
+                        System.Diagnostics.Debug.WriteLine(club.MonthEnd + " " + club.Members);
+                    }
+                }
+
+                return clubStatus.ToString();
             }
             else return new ClubStatus().ToString();
         }

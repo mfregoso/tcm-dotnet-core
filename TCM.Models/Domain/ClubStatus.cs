@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TCM.Models
+﻿namespace TCM.Models.Domain
 {
     public class ClubStatus
     {

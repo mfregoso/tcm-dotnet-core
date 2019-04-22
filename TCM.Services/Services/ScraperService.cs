@@ -1,7 +1,9 @@
 ﻿using AngleSharp.Html.Parser;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
-using TCM.Models;
+using TCM.Models.Domain;
 
 namespace TCM.Services
 {
@@ -38,6 +40,41 @@ namespace TCM.Services
             }
 
             return clubStatus;
+        }
+
+        public static List<ClubPerformance> GetClubPerformance(string id)
+        {
+            string lastMo = DateTime.Now.AddMonths(-1).Month.ToString();
+            string BaseUrl = "https://www.marshalls.org/tmtools/DCP_Hist.cgi?mon=" + lastMo + "&club=";
+
+            using (var client = new HttpClient())
+            {
+                List<ClubPerformance> clubPerformance = new List<ClubPerformance>();
+                try
+                {
+                    var tmTools = client.GetStringAsync(BaseUrl + id).Result;
+                    var parseHtml = new HtmlParser();
+                    var dataTable = parseHtml.ParseDocument(tmTools);
+                    var dataRows = dataTable.QuerySelectorAll("table")[1];
+                    var data = dataRows.QuerySelectorAll("tr").Skip(3);
+                    foreach (var row in data)
+                    {
+                        ClubPerformance metrics = new ClubPerformance();
+                        bool hasMembers = int.TryParse(row.ChildNodes[7].TextContent, out int members);
+                        bool hasGoals = int.TryParse(row.ChildNodes[8].TextContent, out int goals);
+                        metrics.MonthEnd = row.ChildNodes[0].TextContent;
+                        metrics.Members = hasMembers ? members : (int?)null;
+                        metrics.Goals = hasGoals ? goals : (int?)null;
+
+                        clubPerformance.Add(metrics);
+                    }
+                }
+                catch
+                {
+                    System.Diagnostics.Debug.WriteLine("tmtools server error");
+                }
+                return clubPerformance;
+            }
         }
     }
 }
