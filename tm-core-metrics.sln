@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.572
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCM.Web", "TCM.Web\TCM.Web.csproj", "{F19DBF3C-A6F7-4D91-A1F9-718910C727C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TCM.Web", "TCM.Web\TCM.Web.csproj", "{F19DBF3C-A6F7-4D91-A1F9-718910C727C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCM.Services", "TCM.Services\TCM.Services.csproj", "{EAE2D6E3-C6EE-4501-B177-3DFB602CF18F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TCM.Services", "TCM.Services\TCM.Services.csproj", "{EAE2D6E3-C6EE-4501-B177-3DFB602CF18F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TCM.Models", "TCM.Models\TCM.Models.csproj", "{F9427459-B9EF-43EB-A9FF-30884F9CACDF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{EAE2D6E3-C6EE-4501-B177-3DFB602CF18F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EAE2D6E3-C6EE-4501-B177-3DFB602CF18F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EAE2D6E3-C6EE-4501-B177-3DFB602CF18F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9427459-B9EF-43EB-A9FF-30884F9CACDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9427459-B9EF-43EB-A9FF-30884F9CACDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9427459-B9EF-43EB-A9FF-30884F9CACDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9427459-B9EF-43EB-A9FF-30884F9CACDF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

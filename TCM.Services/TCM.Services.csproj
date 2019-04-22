@@ -8,4 +8,8 @@
     <PackageReference Include="AngleSharp" Version="0.11.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TCM.Models\TCM.Models.csproj" />
+  </ItemGroup>
+
 </Project>
