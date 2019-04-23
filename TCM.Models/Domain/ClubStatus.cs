@@ -1,8 +1,11 @@
-﻿namespace TCM.Models.Domain
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TCM.Models.Domain
 {
     public class ClubStatus
     {
-        public string Id { get; set; }
+        [StringLength(8)]
+        public virtual string Id { get; set; }
         public bool Exists { get; set; }
         public int? MembershipCount { get; set; }
 
