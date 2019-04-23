@@ -41,14 +41,14 @@ namespace TCM.Services
             return clubStatus;
         }
 
-        public static List<ClubPerformance> GetClubPerformance(string id)
+        public static List<ClubHistory> GetClubPerformance(string id)
         {
             string lastMo = DateTime.Now.AddMonths(-1).Month.ToString();
             string BaseUrl = "https://www.marshalls.org/tmtools/DCP_Hist.cgi?mon=" + lastMo + "&club=";
 
             using (var client = new HttpClient())
             {
-                List<ClubPerformance> clubPerformance = new List<ClubPerformance>();
+                List<ClubHistory> clubPerformance = new List<ClubHistory>();
                 try
                 {
                     var tmTools = client.GetStringAsync(BaseUrl + id).Result;
@@ -58,7 +58,7 @@ namespace TCM.Services
                     var data = dataRows.QuerySelectorAll("tr").Skip(3);
                     foreach (var row in data)
                     {
-                        ClubPerformance metrics = new ClubPerformance();
+                        ClubHistory metrics = new ClubHistory();
                         bool hasMembers = int.TryParse(row.ChildNodes[7].TextContent, out int members);
                         bool hasGoals = int.TryParse(row.ChildNodes[8].TextContent, out int goals);
                         metrics.MonthEnd = row.ChildNodes[0].TextContent;

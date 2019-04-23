@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Globalization;
+using System.Linq;
+using TCM.Models;
 using TCM.Services;
 using TCM.Services.Utils;
-using TCM.Models.Domain;
-using System.Collections.Generic;
 
 namespace TCM.Web.Controllers
 {
@@ -17,25 +19,22 @@ namespace TCM.Web.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<string> GetByID(string id)
+        public ActionResult<ClubInfo> GetByID(string id)
         {
             bool validId = IdHelpers.IsValid(id);
+            ClubInfo clubInfo = new ClubInfo() { Source = "tm" };
             if (validId)
             {
                 string formattedId = IdHelpers.FormatId(id);
-                ClubStatus clubStatus = ScraperService.GetClubStatus(formattedId);
-                if (clubStatus.Exists)
+                clubInfo.Status = ScraperService.GetClubStatus(formattedId);
+                if (clubInfo.Status.Exists)
                 {
-                    List<ClubPerformance> clubPerfHistory = ScraperService.GetClubPerformance(formattedId);
-                    foreach(var club in clubPerfHistory)
-                    {
-                        System.Diagnostics.Debug.WriteLine(club.MonthEnd + " " + club.Members);
-                    }
+                    clubInfo.History = ScraperService.GetClubPerformance(formattedId);
                 }
 
-                return clubStatus.ToString();
+                return clubInfo;
             }
-            else return "Invalid ID!";
+            else return clubInfo;
         }
     }
 }

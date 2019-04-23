@@ -1,6 +1,6 @@
 ﻿namespace TCM.Models.Domain
 {
-    public class ClubPerformance
+    public class ClubHistory
     {
         public string MonthEnd { get; set; }
         public int? Members { get; set; }
