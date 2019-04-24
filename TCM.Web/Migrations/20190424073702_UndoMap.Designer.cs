@@ -10,8 +10,8 @@ using TCM.Models.Entities;
 namespace TCM.Web.Migrations
 {
     [DbContext(typeof(ClubDataContext))]
-    [Migration("20190424040742_AddExpirationFields")]
-    partial class AddExpirationFields
+    [Migration("20190424073702_UndoMap")]
+    partial class UndoMap
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -29,11 +29,11 @@ namespace TCM.Web.Migrations
 
                     b.Property<bool>("Exists");
 
-                    b.Property<DateTime>("HistoryExpiration");
+                    b.Property<DateTime?>("HistoryExpiration");
 
                     b.Property<int?>("MembershipCount");
 
-                    b.Property<DateTime>("TMIExpiration");
+                    b.Property<DateTime?>("TMIExpiration");
 
                     b.HasKey("Id");
 

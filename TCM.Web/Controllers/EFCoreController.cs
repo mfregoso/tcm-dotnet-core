@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using TCM.Web.Models;
+using TCM.Models.Entities;
 
 namespace TCM.Web.Controllers
 {

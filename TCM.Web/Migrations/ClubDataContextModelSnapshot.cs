@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using TCM.Web.Models;
+using TCM.Models.Entities;
 
 namespace TCM.Web.Migrations
 {
@@ -19,7 +19,7 @@ namespace TCM.Web.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("TCM.Web.Models.Club", b =>
+            modelBuilder.Entity("TCM.Models.Entities.Club", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
@@ -27,18 +27,18 @@ namespace TCM.Web.Migrations
 
                     b.Property<bool>("Exists");
 
-                    b.Property<DateTime>("HistoryExpiration");
+                    b.Property<DateTime?>("HistoryExpiration");
 
                     b.Property<int?>("MembershipCount");
 
-                    b.Property<DateTime>("TMIExpiration");
+                    b.Property<DateTime?>("TMIExpiration");
 
                     b.HasKey("Id");
 
                     b.ToTable("Clubs");
                 });
 
-            modelBuilder.Entity("TCM.Web.Models.MetricsHistory", b =>
+            modelBuilder.Entity("TCM.Models.Entities.MetricsHistory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -61,9 +61,9 @@ namespace TCM.Web.Migrations
                     b.ToTable("MetricsHistory");
                 });
 
-            modelBuilder.Entity("TCM.Web.Models.MetricsHistory", b =>
+            modelBuilder.Entity("TCM.Models.Entities.MetricsHistory", b =>
                 {
-                    b.HasOne("TCM.Web.Models.Club")
+                    b.HasOne("TCM.Models.Entities.Club")
                         .WithMany("MetricsHistory")
                         .HasForeignKey("ClubId");
                 });

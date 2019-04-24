@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using TCM.Models.Domain;
 
-namespace TCM.Web.Models
+namespace TCM.Models.Entities
 {
     public class ClubDataContext : DbContext
     {
@@ -20,8 +20,8 @@ namespace TCM.Web.Models
     {
         [Key]
         public override string Id { get; set; }
-        public DateTime TMIExpiration { get; set; }
-        public DateTime HistoryExpiration { get; set; }
+        public DateTime? TMIExpiration { get; set; }
+        public DateTime? HistoryExpiration { get; set; }
         public ICollection<MetricsHistory> MetricsHistory { get; set; }
     }
 

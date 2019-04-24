@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using TCM.Web.Models;
+using TCM.Models.Entities;
 
 namespace TCM
 {
@@ -22,7 +22,7 @@ namespace TCM
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddDbContext<ClubDataContext>
-                (options => options.UseSqlServer(Configuration.GetConnectionString("AppDb")));
+                (options => options.UseSqlServer(Configuration.GetConnectionString("AppDb"), b => b.MigrationsAssembly("TCM.Web")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
