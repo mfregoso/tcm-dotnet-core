@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TCM.Web.Models;
 
 namespace TCM.Web.Migrations
 {
     [DbContext(typeof(ClubDataContext))]
-    partial class ClubDataContextModelSnapshot : ModelSnapshot
+    [Migration("20190424040742_AddExpirationFields")]
+    partial class AddExpirationFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TCM.Web.Models;
 
 namespace TCM.Web.Migrations
 {
     [DbContext(typeof(ClubDataContext))]
-    partial class ClubDataContextModelSnapshot : ModelSnapshot
+    [Migration("20190424040538_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,11 +29,7 @@ namespace TCM.Web.Migrations
 
                     b.Property<bool>("Exists");
 
-                    b.Property<DateTime>("HistoryExpiration");
-
                     b.Property<int?>("MembershipCount");
-
-                    b.Property<DateTime>("TMIExpiration");
 
                     b.HasKey("Id");
 
