@@ -39,12 +39,38 @@ namespace TCM.Web.Controllers
 
             string formattedId = IdHelpers.FormatId(id);
             var cachedClub = GetClubById(formattedId);
+            bool fullClubUpdate = false;
 
             if (cachedClub != null)
             {
                 clubInfo.Source = "database";
                 clubInfo.Status = cachedClub;
-                return clubInfo;
+
+                if (cachedClub.Exists)
+                {
+                    bool tmiExpired = DateHelpers.IsExpired(cachedClub.TMIExpiration);
+                    bool historyExpired = DateHelpers.IsExpired(cachedClub.HistoryExpiration);
+                    if (tmiExpired && !historyExpired)
+                    {
+                        clubInfo.Source = "db+TMIScrape";
+                        cachedClub.TMIExpiration = DateHelpers.GetTmiExpiration();
+                        var currClub = ScraperService.GetClubStatus(formattedId);
+                        cachedClub.MembershipCount = currClub.MembershipCount;
+
+                        _context.Entry(cachedClub).State = EntityState.Modified;
+                        _context.SaveChanges();
+                        return clubInfo;
+                    }
+                    else if (tmiExpired && historyExpired)
+                    {
+                        fullClubUpdate = true;
+                    }
+                    else if (!tmiExpired && !historyExpired)
+                    {
+                        return clubInfo;
+                    }
+                }
+                else return clubInfo;
             }
 
             DateTime tmiExpiration = DateHelpers.GetTmiExpiration();
@@ -66,8 +92,15 @@ namespace TCM.Web.Controllers
                 newClubEntity.MetricsHistory = ConvertHistory(formattedId, clubInfo.History);
             }
 
-            _context.Clubs.Add(newClubEntity);
-            _context.SaveChanges();
+            if (fullClubUpdate)
+            {
+                _context.Entry(newClubEntity).State = EntityState.Modified;
+                _context.SaveChanges();
+            } else
+            {
+                _context.Clubs.Add(newClubEntity);
+                _context.SaveChanges();
+            }
 
             return clubInfo;
         }
