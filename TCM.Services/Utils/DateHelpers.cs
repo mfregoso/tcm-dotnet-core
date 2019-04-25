@@ -28,5 +28,10 @@ namespace TCM.Services.Utils
             var nextMo = DateTime.UtcNow.AddMonths(1);
             return new DateTime(nextMo.Year, nextMo.Month, 1, 0, 0, 0, DateTimeKind.Utc);
         }
+
+        public static bool IsExpired(DateTime? expirationDate)
+        {
+            return DateTime.UtcNow > expirationDate ? true : false;
+        }
     }
 }
