@@ -3,8 +3,11 @@ using System;
 using System.Globalization;
 using System.Linq;
 using TCM.Models;
+using TCM.Models.Entities;
+using Microsoft.EntityFrameworkCore;
 using TCM.Services;
 using TCM.Services.Utils;
+using System.Collections.Generic;
 
 namespace TCM.Web.Controllers
 {
@@ -12,6 +15,13 @@ namespace TCM.Web.Controllers
     [ApiController]
     public class ClubsController : ControllerBase
     {
+        private readonly ClubDataContext _context;
+
+        public ClubsController(ClubDataContext context)
+        {
+            _context = context;
+        }
+
         [HttpGet]
         public ActionResult<string> Get()
         {
@@ -34,11 +44,40 @@ namespace TCM.Web.Controllers
             if (validId)
             {
                 string formattedId = IdHelpers.FormatId(id);
+                DateTime tmiExpiration = DateHelpers.GetTmiExpiration();
+
                 clubInfo.Status = ScraperService.GetClubStatus(formattedId);
+
+                Club newClub = new Club() // Entity Framework
+                {
+                    Id = formattedId,
+                    Exists = clubInfo.Status.Exists,
+                    MembershipCount = clubInfo.Status.MembershipCount
+                };
+
                 if (clubInfo.Status.Exists)
                 {
+                    newClub.TMIExpiration = tmiExpiration;
+                    newClub.HistoryExpiration = DateHelpers.GetHistoryExpiration();
                     clubInfo.History = ScraperService.GetClubPerformance(formattedId);
+
+                    List<MetricsHistory> metricsHistory = new List<MetricsHistory>();
+                    foreach (var item in clubInfo.History)
+                    {
+                        var temp = new MetricsHistory
+                        {
+                            ClubId = formattedId,
+                            Goals = item.Goals,
+                            Members = item.Members,
+                            MonthEnd = item.MonthEnd
+                        };
+                        metricsHistory.Add(temp);
+                    }
+                    newClub.MetricsHistory = metricsHistory;
                 }
+
+                _context.Clubs.Add(newClub);
+                _context.SaveChanges();
 
                 return clubInfo;
             }
