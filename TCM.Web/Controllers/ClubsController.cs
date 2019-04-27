@@ -69,13 +69,24 @@ namespace TCM.Web.Controllers
                     {
                         return clubInfo;
                     }
+                    else if (!tmiExpired && historyExpired)
+                    {
+                        var updatedHistory = ScraperService.GetClubPerformance(formattedId);
+                        var oldEntries = cachedClub.MetricsHistory.ToList();
+                        _context.MetricsHistory.RemoveRange(oldEntries);
+                        cachedClub.MetricsHistory = ConvertHistory(formattedId, updatedHistory);
+                        _context.Entry(cachedClub).State = EntityState.Modified;
+                        _context.SaveChanges();
+
+                        return clubInfo;
+                    }
                 }
                 else return clubInfo;
             }
 
             DateTime tmiExpiration = DateHelpers.GetTmiExpiration();
             clubInfo.Status = ScraperService.GetClubStatus(formattedId);
-            clubInfo.Source = "scrape";
+            clubInfo.Source = "full scrape";
 
             Club newClubEntity = new Club() // Entity Framework
             {
