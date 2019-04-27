@@ -30,6 +30,7 @@ namespace TCM.Web.Controllers
         {
             //string[] monthYear = { "Jan 09", "feb 11", "Sep 18" };
             //var dates = monthYear.Select(my => DateTime.ParseExact(my, "MMM yy", CultureInfo.InvariantCulture).AddMonths(1).AddDays(-1)).ToArray();
+            //return entityService.GetAllClubs(); //List<ClubStatus>
             return "please get by id: e.g. clubs/455";
         }
 

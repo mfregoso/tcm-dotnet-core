@@ -44,5 +44,15 @@ namespace TCM.Services
             }
             return metricsHistory;
         }
+
+        public List<ClubStatus> GetAllClubs()
+        {
+            return _context.Clubs.Select(
+                club => new ClubStatus() {
+                    Exists = club.Exists,
+                    Id = club.Id,
+                    MembershipCount = club.MembershipCount
+                }).ToList();
+        }
     }
 }
