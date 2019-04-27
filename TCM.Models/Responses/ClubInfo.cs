@@ -8,7 +8,6 @@ namespace TCM.Models
     public class ClubInfo
     {
         public string Source { get; set; }
-        public ClubStatus Status { get; set; }
-        public List<ClubHistory> History { get; set; }
+        public ClubStatus Info { get; set; }
     }
 }
