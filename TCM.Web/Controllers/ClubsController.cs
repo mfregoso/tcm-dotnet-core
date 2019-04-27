@@ -40,7 +40,7 @@ namespace TCM.Web.Controllers
             if (!IdHelpers.IsValid(id)) return clubResponse;
 
             string formattedId = IdHelpers.FormatId(id);
-            var cachedClub = GetClubById(formattedId);
+            var cachedClub = entityService.GetClubById(formattedId);
             bool fullClubUpdate = false;
 
             if (cachedClub != null)
@@ -74,10 +74,13 @@ namespace TCM.Web.Controllers
                     else if (!tmiExpired && historyExpired)
                     {
                         clubResponse.Source = "db+historyScrape";
+                        cachedClub.HistoryExpiration = DateHelpers.GetHistoryExpiration();
                         var updatedHistory = ScraperService.GetClubPerformance(formattedId);
+
                         var oldEntries = cachedClub.MetricsHistory.ToList();
                         _context.MetricsHistory.RemoveRange(oldEntries);
-                        cachedClub.MetricsHistory = ConvertHistory(formattedId, updatedHistory);
+
+                        cachedClub.MetricsHistory = entityService.ConvertHistory(formattedId, updatedHistory);
                         _context.Entry(cachedClub).State = EntityState.Modified;
                         _context.SaveChanges();
 
@@ -87,7 +90,6 @@ namespace TCM.Web.Controllers
                 else return clubResponse;
             }
 
-            DateTime tmiExpiration = DateHelpers.GetTmiExpiration();
             var clubStatus = ScraperService.GetClubStatus(formattedId);
             clubResponse.Source = "full scrape";
 
@@ -100,10 +102,10 @@ namespace TCM.Web.Controllers
 
             if (clubStatus.Exists)
             {
-                newClubEntity.TMIExpiration = tmiExpiration;
+                newClubEntity.TMIExpiration = DateHelpers.GetTmiExpiration(); ;
                 newClubEntity.HistoryExpiration = DateHelpers.GetHistoryExpiration();
                 var mHistory = ScraperService.GetClubPerformance(formattedId);
-                newClubEntity.MetricsHistory = ConvertHistory(formattedId, mHistory);
+                newClubEntity.MetricsHistory = entityService.ConvertHistory(formattedId, mHistory);
             }
 
             if (fullClubUpdate)
@@ -118,37 +120,6 @@ namespace TCM.Web.Controllers
 
             clubResponse.Info = newClubEntity;
             return clubResponse;
-        }
-
-        private bool ClubExists(string id)
-        {
-            return _context.Clubs.Any(e => e.Id == id);
-        }
-
-        private Club GetClubById(string id)
-        {
-            if (!ClubExists(id)) return null;
-            var club = _context.Clubs.Find(id);
-            club.MetricsHistory = _context.MetricsHistory.Where(row => row.ClubId == id).ToArray();
-            return club;
-        }
-
-        private List<MetricsHistory> ConvertHistory(string ClubId, List<ClubHistory> clubHistory)
-        {
-            if (clubHistory.Count == 0) return null;
-            List<MetricsHistory> metricsHistory = new List<MetricsHistory>();
-            foreach (var item in clubHistory)
-            {
-                var temp = new MetricsHistory
-                {
-                    ClubId = ClubId,
-                    Goals = item.Goals,
-                    Members = item.Members,
-                    MonthEnd = item.MonthEnd
-                };
-                metricsHistory.Add(temp);
-            }
-            return metricsHistory;
         }
     }
 }
