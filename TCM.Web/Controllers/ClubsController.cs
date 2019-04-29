@@ -1,14 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Globalization;
-using System.Linq;
 using TCM.Models;
 using TCM.Models.Entities;
-using Microsoft.EntityFrameworkCore;
 using TCM.Services;
 using TCM.Services.Utils;
-using System.Collections.Generic;
-using TCM.Models.Domain;
 
 namespace TCM.Web.Controllers
 {
@@ -37,7 +31,6 @@ namespace TCM.Web.Controllers
         [HttpGet("{id}")]
         public ActionResult<ClubInfo> GetByID(string id)
         {
-            ClubInfo clubResponse = new ClubInfo();
             if (!IdHelpers.IsValid(id)) return new ClubInfo();
             string formattedId = IdHelpers.FormatId(id);
 

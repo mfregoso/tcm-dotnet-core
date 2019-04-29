@@ -10,12 +10,12 @@ namespace TCM.Services
 {
     public class EntityService
     {
+        private ClubDataContext _context { get; }
+
         public EntityService(ClubDataContext context)
         {
             _context = context;
         }
-
-        private ClubDataContext _context { get; }
 
         public bool ClubExists(string id)
         {
@@ -60,7 +60,7 @@ namespace TCM.Services
                     {
                         clubResponse.Source = "db+historyScrape";
                         cachedClub.HistoryExpiration = DateHelpers.GetHistoryExpiration();
-                        var updatedHistory = ScraperService.GetClubPerformance(formattedId);
+                        var updatedHistory = ScraperService.GetMetricsHistory(formattedId);
 
                         var oldEntries = cachedClub.MetricsHistory.ToList();
                         _context.MetricsHistory.RemoveRange(oldEntries);
@@ -89,7 +89,7 @@ namespace TCM.Services
             {
                 newClubEntity.TMIExpiration = DateHelpers.GetTmiExpiration(); ;
                 newClubEntity.HistoryExpiration = DateHelpers.GetHistoryExpiration();
-                var mHistory = ScraperService.GetClubPerformance(formattedId);
+                var mHistory = ScraperService.GetMetricsHistory(formattedId);
                 newClubEntity.MetricsHistory = ConvertHistory(formattedId, mHistory);
             }
 

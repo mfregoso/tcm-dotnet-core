@@ -41,14 +41,14 @@ namespace TCM.Services
             return clubStatus;
         }
 
-        public static List<ClubHistory> GetClubPerformance(string id)
+        public static List<ClubHistory> GetMetricsHistory(string id)
         {
             string lastMo = DateTime.Now.AddMonths(-1).Month.ToString();
             string BaseUrl = "https://www.marshalls.org/tmtools/DCP_Hist.cgi?mon=" + lastMo + "&club=";
 
             using (var client = new HttpClient())
             {
-                List<ClubHistory> clubPerformance = new List<ClubHistory>();
+                List<ClubHistory> clubHistory = new List<ClubHistory>();
                 try
                 {
                     var tmTools = client.GetStringAsync(BaseUrl + id).Result;
@@ -65,14 +65,14 @@ namespace TCM.Services
                         metrics.Members = hasMembers ? members : (int?)null;
                         metrics.Goals = hasGoals ? goals : (int?)null;
 
-                        clubPerformance.Add(metrics);
+                        clubHistory.Add(metrics);
                     }
                 }
                 catch
                 {
                     System.Diagnostics.Debug.WriteLine("tmtools server error");
                 }
-                return clubPerformance;
+                return clubHistory;
             }
         }
     }
