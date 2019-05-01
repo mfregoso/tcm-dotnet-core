@@ -24,68 +24,29 @@ namespace TCM.Services
 
         public ClubInfo ClubReqHandler(string formattedId)
         {
-            ClubInfo clubResponse = new ClubInfo();
+            ClubInfo clubResponse = new ClubInfo() { Source = "full scrape" };
             var cachedClub = GetClubById(formattedId);
 
             if (cachedClub != null)
             {
                 clubResponse.Info = cachedClub;
+                clubResponse.Source = "database";
 
                 if (cachedClub.Exists)
                 {
                     bool tmiExpired = DateHelpers.IsExpired(cachedClub.TMIExpiration);
                     bool historyExpired = DateHelpers.IsExpired(cachedClub.HistoryExpiration);
-                    
-                    if (!tmiExpired && !historyExpired)
-                    {
-                        clubResponse.Source = "database";
-                        return clubResponse;
-                    }
-                    else if (tmiExpired && !historyExpired)
-                    {
-                        clubResponse.Source = "db+TMIScrape";
-                        cachedClub.TMIExpiration = DateHelpers.GetTmiExpiration();
-                        var currClub = ScraperService.GetClubStatus(formattedId);
-                        cachedClub.MembershipCount = currClub.MembershipCount;
 
-                        _context.Entry(cachedClub).State = EntityState.Modified;
-                        _context.SaveChanges();
-                        return clubResponse;
-                    }
-                    else if (!tmiExpired && historyExpired)
-                    {
-                        clubResponse.Source = "db+historyScrape";
-                        cachedClub.HistoryExpiration = DateHelpers.GetHistoryExpiration();
-                        var updatedHistory = ScraperService.GetMetricsHistory(formattedId);
-
-                        var oldEntries = cachedClub.MetricsHistory.ToList();
-                        _context.MetricsHistory.RemoveRange(oldEntries);
-
-                        cachedClub.MetricsHistory = ConvertHistory(formattedId, updatedHistory);
-                        _context.Entry(cachedClub).State = EntityState.Modified;
-                        _context.SaveChanges();
-
-                        return clubResponse;
-                    }
-                    else if (tmiExpired && historyExpired)
-                    {
-                        clubResponse.Source = "full scrape";
-                        cachedClub = UpdateCachedClubStatus(cachedClub);
-                        cachedClub = UpdateCachedClubHistory(cachedClub);
-
-                        _context.Entry(cachedClub).State = EntityState.Modified;
-                        _context.SaveChanges();
-
-                        return clubResponse;
-                    }
+                    clubResponse.Source = GetDataSourceName(tmiExpired, historyExpired);
+                    cachedClub = UpdateCachedClubData(cachedClub, tmiExpired, historyExpired);
+                
+                    return clubResponse;
                 }
                 else return clubResponse;
             }
 
             var clubStatus = ScraperService.GetClubStatus(formattedId);
-            clubResponse.Source = "full scrape";
-
-            Club newClubEntity = new Club() // Entity Framework
+            var newClubEntity = new Club() // Entity Framework
             {
                 Id = formattedId,
                 Exists = clubStatus.Exists,
@@ -143,6 +104,17 @@ namespace TCM.Services
                 }).ToList();
         }
 
+        private Club UpdateCachedClubData(Club cachedClub, bool tmiExpired, bool historyExpired)
+        {
+            if (!tmiExpired && !historyExpired) return cachedClub;
+            if (tmiExpired) cachedClub = UpdateCachedClubStatus(cachedClub);
+            if (historyExpired) cachedClub = UpdateCachedClubHistory(cachedClub);
+
+            _context.Entry(cachedClub).State = EntityState.Modified;
+            _context.SaveChanges();
+            return cachedClub;
+        }
+
         private Club UpdateCachedClubStatus(Club cachedClub)
         {
             var currData = ScraperService.GetClubStatus(cachedClub.Id);
@@ -170,6 +142,23 @@ namespace TCM.Services
         {
             var oldEntries = cachedClub.MetricsHistory.ToList();
             _context.MetricsHistory.RemoveRange(oldEntries);
+        }
+
+        private string GetDataSourceName(bool tmiExpired, bool historyExpired)
+        {
+            if (tmiExpired && !historyExpired)
+            {
+                return "db+TMIScrape";
+            }
+            else if (!tmiExpired && historyExpired)
+            {
+                return "db+historyScrape";
+            }
+            else if (tmiExpired && historyExpired)
+            {
+                return "full scrape";
+            }
+            else return "database";
         }
     }
 }
