@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using TCM.Models;
 using TCM.Models.Entities;
 using TCM.Services;
@@ -35,6 +36,12 @@ namespace TCM.Web.Controllers
             string formattedId = IdHelpers.FormatId(id);
 
             return entityService.ClubReqHandler(formattedId);
+        }
+
+        [HttpGet("search")]
+        public ActionResult<JObject> SearchClubs(string query, int radius, double latitude, double longitude)
+        {
+            return ClubSearchService.SearchClubs(query, radius, latitude, longitude);
         }
     }
 }
