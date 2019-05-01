@@ -70,16 +70,9 @@ namespace TCM.Services
                     else if (tmiExpired && historyExpired)
                     {
                         clubResponse.Source = "full scrape";
-                        var currClub = ScraperService.GetClubStatus(formattedId);
-                        cachedClub.MembershipCount = currClub.MembershipCount;
-                        cachedClub.TMIExpiration = DateHelpers.GetTmiExpiration();
-                        cachedClub.HistoryExpiration = DateHelpers.GetHistoryExpiration();
-                        var updatedHistory = ScraperService.GetMetricsHistory(formattedId);
+                        cachedClub = UpdateCachedClubStatus(cachedClub);
+                        cachedClub = UpdateCachedClubHistory(cachedClub);
 
-                        var oldEntries = cachedClub.MetricsHistory.ToList();
-                        _context.MetricsHistory.RemoveRange(oldEntries);
-
-                        cachedClub.MetricsHistory = ConvertHistory(formattedId, updatedHistory);
                         _context.Entry(cachedClub).State = EntityState.Modified;
                         _context.SaveChanges();
 
@@ -148,6 +141,35 @@ namespace TCM.Services
                     Id = club.Id,
                     MembershipCount = club.MembershipCount
                 }).ToList();
+        }
+
+        private Club UpdateCachedClubStatus(Club cachedClub)
+        {
+            var currData = ScraperService.GetClubStatus(cachedClub.Id);
+
+            cachedClub.Exists = currData.Exists;
+            cachedClub.MembershipCount = currData.MembershipCount;
+            cachedClub.TMIExpiration = DateHelpers.GetTmiExpiration();
+
+            return cachedClub;
+        }
+
+        private Club UpdateCachedClubHistory(Club cachedClub)
+        {
+            string formattedId = cachedClub.Id;
+            var updatedHistory = ScraperService.GetMetricsHistory(formattedId);
+            cachedClub.HistoryExpiration = DateHelpers.GetHistoryExpiration();
+
+            DeleteClubHistoryFromDb(cachedClub);
+            cachedClub.MetricsHistory = ConvertHistory(formattedId, updatedHistory);
+
+            return cachedClub;
+        }
+
+        private void DeleteClubHistoryFromDb(Club cachedClub)
+        {
+            var oldEntries = cachedClub.MetricsHistory.ToList();
+            _context.MetricsHistory.RemoveRange(oldEntries);
         }
     }
 }
