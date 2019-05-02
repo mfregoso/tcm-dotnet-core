@@ -24,7 +24,7 @@ namespace TCM.Services
 
         public ClubInfo ClubReqHandler(string formattedId)
         {
-            ClubInfo clubResponse = new ClubInfo() { Source = "full scrape" };
+            var clubResponse = new ClubInfo() { Source = "full scrape" };
             var cachedClub = GetClubById(formattedId);
 
             if (cachedClub != null)
@@ -43,29 +43,11 @@ namespace TCM.Services
                     return clubResponse;
                 }
                 else return clubResponse;
-            }
-
-            var clubStatus = ScraperService.GetClubStatus(formattedId);
-            var newClubEntity = new Club() // Entity Framework
+            } else
             {
-                Id = formattedId,
-                Exists = clubStatus.Exists,
-                MembershipCount = clubStatus.MembershipCount
-            };
-
-            if (clubStatus.Exists)
-            {
-                newClubEntity.TMIExpiration = DateHelpers.GetTmiExpiration(); ;
-                newClubEntity.HistoryExpiration = DateHelpers.GetHistoryExpiration();
-                var mHistory = ScraperService.GetMetricsHistory(formattedId);
-                newClubEntity.MetricsHistory = ConvertHistory(formattedId, mHistory);
+                clubResponse.Info = NewClubRequest(formattedId);
+                return clubResponse;
             }
-            
-            _context.Clubs.Add(newClubEntity);
-            _context.SaveChanges();
-
-            clubResponse.Info = newClubEntity;
-            return clubResponse;
         }
 
         public Club GetClubById(string id)
@@ -102,6 +84,30 @@ namespace TCM.Services
                     Id = club.Id,
                     MembershipCount = club.MembershipCount
                 }).ToList();
+        }
+
+        private Club NewClubRequest(string formattedId)
+        {
+            var requestedClub = ScraperService.GetClubStatus(formattedId);
+            var newClubEntity = new Club()
+            {
+                Id = formattedId,
+                Exists = requestedClub.Exists,
+                MembershipCount = requestedClub.MembershipCount
+            };
+
+            if (requestedClub.Exists)
+            {
+                newClubEntity.TMIExpiration = DateHelpers.GetTmiExpiration();
+                newClubEntity.HistoryExpiration = DateHelpers.GetHistoryExpiration();
+                var mHistory = ScraperService.GetMetricsHistory(formattedId);
+                newClubEntity.MetricsHistory = ConvertHistory(formattedId, mHistory);
+            }
+
+            _context.Clubs.Add(newClubEntity);
+            _context.SaveChanges();
+
+            return newClubEntity;
         }
 
         private Club UpdateCachedClubData(Club cachedClub, bool tmiExpired, bool historyExpired)
