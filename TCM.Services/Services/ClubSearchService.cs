@@ -35,8 +35,8 @@ namespace TCM.Services
             }
             catch (WebException ex)
             {
-                var errMsg = "{\"error\": true, \"message\": \"" + ex.Message + "\"}";
-                clubs = (JObject)JsonConvert.DeserializeObject(errMsg);
+                var errMsg = new { error = true, message = ex.Message };
+                clubs = JObject.FromObject(errMsg);
             }
             return clubs;
         }
