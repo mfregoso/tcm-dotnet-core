@@ -21,7 +21,7 @@
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "api/clubs/",
-      "applicationUrl": "http://localhost:5000",
+      "applicationUrl": "http://localhost:52939",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

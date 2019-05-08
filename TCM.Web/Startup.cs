@@ -34,6 +34,8 @@ namespace TCM
             }
 
             app.UseMvc();
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
         }
     }
 }
