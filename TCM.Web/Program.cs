@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using TCM.Models.Entities;
 
 namespace TCM
 {
@@ -7,7 +10,14 @@ namespace TCM
     {
         public static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            var host = CreateWebHostBuilder(args).Build();
+            using (var serviceScope = host.Services.CreateScope())
+            {
+                var context = serviceScope.ServiceProvider.GetRequiredService<ClubDataContext>();
+                context.Database.Migrate();
+            }
+
+            host.Run();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
