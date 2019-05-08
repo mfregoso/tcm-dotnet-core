@@ -14,14 +14,13 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
+steps:
 - task: NuGetToolInstaller@0
 
 - task: NuGetCommand@2
   inputs:
-    command: 'restore'
-    restoreSolution: '**/*.sln'
+    restoreSolution: '$(solution)'
 
-steps:
 - task: NodeTool@0
   inputs:
     versionSpec: '10.x'
