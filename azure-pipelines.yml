@@ -14,6 +14,12 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
+- task: NuGetToolInstaller@0
+
+- task: NuGetCommand@2
+  inputs:
+    restoreSolution: '$(solution)'
+
 steps:
 - task: NodeTool@0
   inputs:
@@ -34,12 +40,6 @@ steps:
 - task: BatchScript@1
   inputs:
     filename: 'copy-client.cmd'
-
-- task: NuGetToolInstaller@0
-
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
 
 - task: VSBuild@1
   inputs:
