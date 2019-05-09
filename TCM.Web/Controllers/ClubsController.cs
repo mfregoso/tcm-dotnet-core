@@ -11,13 +11,11 @@ namespace TCM.Web.Controllers
     [ApiController]
     public class ClubsController : ControllerBase
     {
-        private readonly ClubDataContext _context;
         private readonly EntityService entityService;
 
         public ClubsController(ClubDataContext context)
         {
-            _context = context;
-            entityService = new EntityService(_context);
+            entityService = new EntityService(context);
         }
 
         [HttpGet]
@@ -32,7 +30,7 @@ namespace TCM.Web.Controllers
         [HttpGet("{id}")]
         public ActionResult<ClubInfo> GetByID(string id)
         {
-            if (!IdHelpers.IsValid(id)) return new ClubInfo();
+            if (!IdHelpers.IsValid(id)) return BadRequest(new { message = "Invalid club number" }); //NotFound()?
             string formattedId = IdHelpers.FormatId(id);
 
             return entityService.ClubReqHandler(formattedId);

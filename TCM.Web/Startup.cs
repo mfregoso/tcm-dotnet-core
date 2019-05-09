@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
 using TCM.Models.Entities;
 
 namespace TCM
@@ -36,9 +37,18 @@ namespace TCM
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseMvc();
-            app.UseDefaultFiles();
-            app.UseStaticFiles();
+            app.Use(async (context, next) =>
+            {
+                await next();
+                if (context.Response.StatusCode == 404 && !Path.HasExtension(context.Request.Path.Value))
+                {
+                    context.Request.Path = "/index.html";
+                    await next();
+                }
+            })
+            .UseDefaultFiles()
+            .UseStaticFiles()
+            .UseMvc();
         }
     }
 }

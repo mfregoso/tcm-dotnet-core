@@ -118,7 +118,14 @@ namespace TCM.Services
             if (historyExpired) cachedClub = UpdateCachedClubHistory(cachedClub);
 
             _context.Entry(cachedClub).State = EntityState.Modified;
-            _context.SaveChanges();
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
+            }
             return cachedClub;
         }
 
