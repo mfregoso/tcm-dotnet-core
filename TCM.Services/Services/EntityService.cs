@@ -60,8 +60,9 @@ namespace TCM.Services
 
         public List<MetricsHistory> ConvertHistory(string ClubId, List<ClubHistory> clubHistory)
         {
-            if (clubHistory.Count == 0) return null;
             List<MetricsHistory> metricsHistory = new List<MetricsHistory>();
+            if (clubHistory.Count == 0) return metricsHistory;
+
             foreach (var item in clubHistory)
             {
                 var temp = new MetricsHistory
