@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import App from "./App";
+import TCM from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./store";
@@ -10,7 +10,7 @@ import "bootstrap/dist/css/bootstrap.css";
 ReactDOM.render(
   <Provider store={store}>
     <BrowserRouter>
-      <App />
+      <TCM />
     </BrowserRouter>
   </Provider>,
   document.getElementById("root")
