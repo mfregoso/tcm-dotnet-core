@@ -15,7 +15,7 @@ class ClubMetrics extends Component {
     if (!isLoading && metrics.length) {
       return (
         <div className="mx-auto text-center">
-          <h2 className="text-center">Previous Years Membership Count</h2>
+          <h4 className="text-center">Previous Years Membership Count</h4>
           <ResponsiveContainer width="100%" height={200}>
             <ComposedChart
               data={metrics}
@@ -36,7 +36,7 @@ class ClubMetrics extends Component {
             </ComposedChart>
           </ResponsiveContainer>
           <br />
-          <h2 className="text-center">Number of Goals Achieved</h2>
+          <h4 className="text-center">Number of Goals Achieved</h4>
           <ResponsiveContainer width="100%" height={200}>
             <ComposedChart
               data={metrics}
@@ -61,7 +61,7 @@ class ClubMetrics extends Component {
     } else if (!isLoading) {
       return (
         <div className="mx-auto text-center">
-          <h2 className="text-center">Club Metrics Could Not Be Found</h2>
+          <h4 className="text-center">Club Metrics Could Not Be Found</h4>
         </div>
       );
     }

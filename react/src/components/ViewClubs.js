@@ -25,7 +25,7 @@ class ViewClubs extends Component {
     location: "",
     clubMetrics: [],
     metricsModal: false,
-    clubMembershipCount: "",
+    clubMembershipCount: null,
     clubId: "",
     clubName: "",
     loadingMetrics: true
@@ -65,7 +65,7 @@ class ViewClubs extends Component {
         metricsModal: isOpen,
         clubId: "",
         clubName: "",
-        clubMembershipCount: "",
+        clubMembershipCount: null,
         clubMetrics: [],
         loadingMetrics: true
       });
@@ -263,10 +263,9 @@ class ViewClubs extends Component {
         </div>
         <MetricsModal
           clubId={this.state.clubId}
-          className="fluid-container col-xl-12 col-lg-12"
           showModal={this.state.metricsModal}
           toggle={() => this.toggleModal(false)}
-          memberCount={this.state.clubMembershipCount}
+          membershipCount={this.state.clubMembershipCount}
           clubName={this.state.clubName}
         >
           {this.state.clubId && (

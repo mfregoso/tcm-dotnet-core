@@ -3,10 +3,10 @@ import { Modal, ModalHeader, ModalBody } from "reactstrap";
 
 class MetricsModal extends Component {
   titlePlaceholder = () => {
-    if (this.props.memberCount || this.props.memberCount === 0) {
+    if (this.props.membershipCount !== null) {
       return (
         <React.Fragment>
-          {this.props.clubName} currently has {this.props.memberCount} members
+          {this.props.clubName} currently has {this.props.membershipCount} members
         </React.Fragment>
       );
     } else {
@@ -20,14 +20,13 @@ class MetricsModal extends Component {
           isOpen={this.props.showModal}
           size="lg"
           toggle={this.props.toggle}
-          className={this.props.className}
         >
           <ModalHeader
             className="bg-danger"
             toggle={this.toggle}
             style={{ color: "white" }}
           >
-            <big className="text-right float-right mx-auto ">
+            <big className="text-left float-left">
               {this.titlePlaceholder()}
             </big>
           </ModalHeader>
