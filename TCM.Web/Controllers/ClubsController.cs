@@ -2,8 +2,9 @@
 using Newtonsoft.Json.Linq;
 using TCM.Models;
 using TCM.Models.Entities;
-using TCM.Services;
-using TCM.Services.Utils;
+using TCM.Web.Interfaces;
+using TCM.Web.Services;
+using TCM.Web.Utils;
 
 namespace TCM.Web.Controllers
 {
@@ -11,11 +12,11 @@ namespace TCM.Web.Controllers
     [ApiController]
     public class ClubsController : ControllerBase
     {
-        private readonly EntityService entityService;
+        private readonly IEntityService _entityService;
 
-        public ClubsController(ClubDataContext context)
+        public ClubsController(ClubDataContext context, IEntityService entityService)
         {
-            entityService = new EntityService(context);
+            _entityService = entityService;
         }
 
         [HttpGet]
@@ -33,7 +34,7 @@ namespace TCM.Web.Controllers
             if (!IdHelpers.IsValid(id)) return BadRequest(new { message = "Invalid club number" }); //NotFound()?
             string formattedId = IdHelpers.FormatId(id);
 
-            return entityService.ClubReqHandler(formattedId);
+            return _entityService.ClubReqHandler(formattedId);
         }
 
         [HttpGet("search")]

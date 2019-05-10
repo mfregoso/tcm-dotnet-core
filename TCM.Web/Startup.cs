@@ -6,6 +6,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using TCM.Models.Entities;
+using TCM.Web.Interfaces;
+using TCM.Web.Services;
+using TCM.Web.Utils;
 
 namespace TCM
 {
@@ -27,6 +30,9 @@ namespace TCM
             var db = InDevelopment ? "LocalDb" : "CloudDb";
             services.AddDbContext<ClubDataContext>
                 (options => options.UseSqlServer(Configuration.GetConnectionString(db), b => b.MigrationsAssembly("TCM.Web")));
+
+            services.AddScoped<IEntityService, EntityService>();
+            services.AddScoped<IDateHelpers, DateHelpers>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
