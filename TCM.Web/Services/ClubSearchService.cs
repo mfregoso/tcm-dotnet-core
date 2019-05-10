@@ -2,12 +2,13 @@
 using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Net;
+using TCM.Web.Interfaces;
 
 namespace TCM.Web.Services
 {
-    public class ClubSearchService
+    public class ClubSearchService : IClubSearchService
     {
-        public static JObject SearchClubs(string query, int radius, double lat, double lng)
+        public JObject SearchClubs(string query, int radius, double lat, double lng)
         {
             string clubSearchAPI = "http://www.toastmasters.org/api/sitecore/FindAClub/Search?q=" + query + "&radius=" + radius + "&n=&status=O&advanced=0&latitude=" + lat + "&longitude=" + lng + "&autocomplete=false";
 

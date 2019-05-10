@@ -13,10 +13,12 @@ namespace TCM.Web.Controllers
     public class ClubsController : ControllerBase
     {
         private readonly IEntityService _entityService;
+        private readonly IClubSearchService _clubSearchService;
 
-        public ClubsController(ClubDataContext context, IEntityService entityService)
+        public ClubsController(IEntityService entityService, IClubSearchService clubSearchService)
         {
             _entityService = entityService;
+            _clubSearchService = clubSearchService;
         }
 
         [HttpGet]
@@ -40,7 +42,7 @@ namespace TCM.Web.Controllers
         [HttpGet("search")]
         public ActionResult<JObject> SearchClubs(string query, int radius, double latitude, double longitude)
         {
-            return ClubSearchService.SearchClubs(query, radius, latitude, longitude);
+            return _clubSearchService.SearchClubs(query, radius, latitude, longitude);
         }
     }
 }

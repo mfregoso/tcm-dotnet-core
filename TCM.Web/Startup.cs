@@ -33,6 +33,7 @@ namespace TCM
 
             services.AddScoped<IEntityService, EntityService>();
             services.AddScoped<IDateHelpers, DateHelpers>();
+            services.AddScoped<IClubSearchService, ClubSearchService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

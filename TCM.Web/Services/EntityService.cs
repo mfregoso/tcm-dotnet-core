@@ -10,7 +10,7 @@ namespace TCM.Web.Services
 {
     public class EntityService : IEntityService
     {
-        private ClubDataContext _context { get; }
+        private readonly ClubDataContext _context;
         private readonly IDateHelpers _dateHelpers;
 
         public EntityService(ClubDataContext context, IDateHelpers dateHelpers)
