@@ -5,22 +5,10 @@ namespace TCM.Services.Utils
 {
     public class DateHelpers
     {
-        private static readonly int EXP_HOUR_UTC = 18;
-
-        public static DateTime SetExpiration(DateTime dT)
-        {
-            return new DateTime(dT.Year, dT.Month, dT.Day, EXP_HOUR_UTC, 0, 0, DateTimeKind.Utc);
-        }
-
         public static DateTime GetTmiExpiration()
         {
-            var today = DateTime.UtcNow;
-            if (today.Hour < EXP_HOUR_UTC) return SetExpiration(today);
-            else
-            {
-                var tomorrow = today.AddDays(1);
-                return SetExpiration(tomorrow);
-            }
+            var nextWeek = DateTime.UtcNow.AddDays(7);
+            return nextWeek;
         }
 
         public static DateTime GetHistoryExpiration()
