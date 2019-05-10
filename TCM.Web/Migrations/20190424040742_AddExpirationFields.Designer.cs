@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using TCM.Models.Entities;
+using TCM.Web.Entities;
 
 namespace TCM.Web.Migrations
 {
@@ -21,7 +21,7 @@ namespace TCM.Web.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("TCM.Models.Entities.Club", b =>
+            modelBuilder.Entity("TCM.Web.Entities.Club", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd()
@@ -40,7 +40,7 @@ namespace TCM.Web.Migrations
                     b.ToTable("Clubs");
                 });
 
-            modelBuilder.Entity("TCM.Models.Entities.MetricsHistory", b =>
+            modelBuilder.Entity("TCM.Web.Entities.MetricsHistory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -63,9 +63,9 @@ namespace TCM.Web.Migrations
                     b.ToTable("MetricsHistory");
                 });
 
-            modelBuilder.Entity("TCM.Models.Entities.MetricsHistory", b =>
+            modelBuilder.Entity("TCM.Web.Entities.MetricsHistory", b =>
                 {
-                    b.HasOne("TCM.Models.Entities.Club")
+                    b.HasOne("TCM.Web.Entities.Club")
                         .WithMany("MetricsHistory")
                         .HasForeignKey("ClubId");
                 });

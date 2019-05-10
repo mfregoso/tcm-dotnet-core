@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using TCM.Models.Domain;
 
-namespace TCM.Models.Entities
+namespace TCM.Web.Entities
 {
     public class ClubDataContext : DbContext
     {

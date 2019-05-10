@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
-using TCM.Models.Entities;
+using TCM.Web.Entities;
 using TCM.Web.Interfaces;
 using TCM.Web.Services;
 using TCM.Web.Utils;

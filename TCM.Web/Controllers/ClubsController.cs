@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using TCM.Models;
-using TCM.Models.Entities;
 using TCM.Web.Interfaces;
-using TCM.Web.Services;
 using TCM.Web.Utils;
 
 namespace TCM.Web.Controllers

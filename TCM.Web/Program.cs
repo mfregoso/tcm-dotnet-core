@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using TCM.Models.Entities;
+using TCM.Web.Entities;
 
 namespace TCM
 {

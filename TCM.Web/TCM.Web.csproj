@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TCM.Services\TCM.Services.csproj" />
+    <ProjectReference Include="..\TCM.Models\TCM.Models.csproj" />
   </ItemGroup>
 
 </Project>

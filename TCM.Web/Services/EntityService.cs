@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TCM.Models;
 using TCM.Models.Domain;
-using TCM.Models.Entities;
+using TCM.Web.Entities;
 using TCM.Web.Interfaces;
 
 namespace TCM.Web.Services

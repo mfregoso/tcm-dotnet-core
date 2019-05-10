@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using TCM.Models;
 using TCM.Models.Domain;
-using TCM.Models.Entities;
+using TCM.Web.Entities;
 
 namespace TCM.Web.Interfaces
 {
