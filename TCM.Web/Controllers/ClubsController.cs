@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using System.Threading.Tasks;
 using TCM.Models;
 using TCM.Web.Interfaces;
 using TCM.Web.Utils;
@@ -26,12 +27,12 @@ namespace TCM.Web.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<ClubInfo> GetByID(string id)
+        public async Task<ActionResult<ClubInfo>> GetByID(string id)
         {
             if (!IdHelpers.IsValid(id)) return BadRequest(new { message = "Invalid club number" }); //NotFound()?
             string formattedId = IdHelpers.FormatId(id);
 
-            return _entityService.ClubReqHandler(formattedId);
+            return await _entityService.ClubReqHandler(formattedId);
         }
 
         [HttpGet("search")]

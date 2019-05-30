@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TCM.Models;
 using TCM.Models.Domain;
 using TCM.Web.Entities;
@@ -24,7 +25,7 @@ namespace TCM.Web.Services
             return _context.Clubs.Any(e => e.Id == id);
         }
 
-        public ClubInfo ClubReqHandler(string formattedId)
+        public async Task<ClubInfo> ClubReqHandler(string formattedId)
         {
             var clubResponse = new ClubInfo() { Source = "brand new scrape" };
             var cachedClub = GetClubById(formattedId);
@@ -40,14 +41,14 @@ namespace TCM.Web.Services
                     bool historyExpired = _dateHelpers.IsExpired(cachedClub.HistoryExpiration);
 
                     clubResponse.Source = GetDataSourceName(tmiExpired, historyExpired);
-                    cachedClub = UpdateCachedClubData(cachedClub, tmiExpired, historyExpired);
+                    cachedClub = await UpdateCachedClubData(cachedClub, tmiExpired, historyExpired);
                 
                     return clubResponse;
                 }
                 else return clubResponse;
             } else
             {
-                clubResponse.Info = NewClubRequest(formattedId);
+                clubResponse.Info = await NewClubRequest(formattedId);
                 return clubResponse;
             }
         }
@@ -89,7 +90,7 @@ namespace TCM.Web.Services
                 }).ToList();
         }
 
-        private Club NewClubRequest(string formattedId)
+        private async Task<Club> NewClubRequest(string formattedId)
         {
             var requestedClub = ScraperService.GetClubStatus(formattedId);
             var newClubEntity = new Club()
@@ -108,12 +109,12 @@ namespace TCM.Web.Services
             }
 
             _context.Clubs.Add(newClubEntity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return newClubEntity;
         }
 
-        private Club UpdateCachedClubData(Club cachedClub, bool tmiExpired, bool historyExpired)
+        private async Task<Club> UpdateCachedClubData(Club cachedClub, bool tmiExpired, bool historyExpired)
         {
             if (!tmiExpired && !historyExpired) return cachedClub;
             if (tmiExpired) cachedClub = UpdateCachedClubStatus(cachedClub);
@@ -122,7 +123,7 @@ namespace TCM.Web.Services
             _context.Entry(cachedClub).State = EntityState.Modified;
             try
             {
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -157,7 +158,7 @@ namespace TCM.Web.Services
         private void DeleteClubHistoryFromDb(Club cachedClub)
         {
             var oldEntries = cachedClub.MetricsHistory.ToList();
-            _context.MetricsHistory.RemoveRange(oldEntries);
+            Task.Run(() => _context.MetricsHistory.RemoveRange(oldEntries)).ConfigureAwait(false);
         }
 
         private string GetDataSourceName(bool tmiExpired = false, bool historyExpired = false)
