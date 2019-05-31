@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using TCM.Models.Domain;
+using TCM.Web.Entities;
 
 namespace TCM.Web.Services
 {
@@ -41,14 +42,14 @@ namespace TCM.Web.Services
             return clubStatus;
         }
 
-        public static List<ClubHistory> GetMetricsHistory(string id)
+        public static List<MetricsHistory> GetMetricsHistory(string id)
         {
             string lastMo = DateTime.Now.AddMonths(-1).Month.ToString();
             string BaseUrl = "https://www.marshalls.org/tmtools/DCP_Hist.cgi?mon=" + lastMo + "&club=";
 
             using (var client = new HttpClient())
             {
-                List<ClubHistory> clubHistory = new List<ClubHistory>();
+                List<MetricsHistory> clubHistory = new List<MetricsHistory>();
                 try
                 {
                     var tmTools = client.GetStringAsync(BaseUrl + id).Result;
@@ -58,9 +59,10 @@ namespace TCM.Web.Services
                     var data = dataRows.QuerySelectorAll("tr").Skip(3);
                     foreach (var row in data)
                     {
-                        ClubHistory metrics = new ClubHistory();
+                        MetricsHistory metrics = new MetricsHistory();
                         bool hasMembers = int.TryParse(row.ChildNodes[7].TextContent, out int members);
                         bool hasGoals = int.TryParse(row.ChildNodes[8].TextContent, out int goals);
+                        metrics.ClubId = id;
                         metrics.MonthEnd = row.ChildNodes[0].TextContent;
                         metrics.Members = hasMembers ? members : (int?)null;
                         metrics.Goals = hasGoals ? goals : (int?)null;

@@ -10,7 +10,6 @@ namespace TCM.Web.Interfaces
     {
         bool ClubExists(string id);
         Task<ClubInfo> ClubReqHandler(string formattedId);
-        List<MetricsHistory> ConvertHistory(string ClubId, List<ClubHistory> clubHistory);
         List<ClubStatus> GetAllClubs();
         Club GetClubById(string id);
     }

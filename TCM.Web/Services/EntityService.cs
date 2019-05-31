@@ -61,25 +61,6 @@ namespace TCM.Web.Services
             return club;
         }
 
-        public List<MetricsHistory> ConvertHistory(string ClubId, List<ClubHistory> clubHistory)
-        {
-            List<MetricsHistory> metricsHistory = new List<MetricsHistory>();
-            if (clubHistory.Count == 0) return metricsHistory;
-
-            foreach (var item in clubHistory)
-            {
-                var temp = new MetricsHistory
-                {
-                    ClubId = ClubId,
-                    Goals = item.Goals,
-                    Members = item.Members,
-                    MonthEnd = item.MonthEnd
-                };
-                metricsHistory.Add(temp);
-            }
-            return metricsHistory;
-        }
-
         public List<ClubStatus> GetAllClubs()
         {
             return _context.Clubs.Select(
@@ -104,8 +85,7 @@ namespace TCM.Web.Services
             {
                 newClubEntity.TMIExpiration = _dateHelpers.GetTmiExpiration();
                 newClubEntity.HistoryExpiration = _dateHelpers.GetHistoryExpiration();
-                var mHistory = ScraperService.GetMetricsHistory(formattedId);
-                newClubEntity.MetricsHistory = ConvertHistory(formattedId, mHistory);
+                newClubEntity.MetricsHistory = ScraperService.GetMetricsHistory(formattedId);
             }
 
             _context.Clubs.Add(newClubEntity);
@@ -145,13 +125,9 @@ namespace TCM.Web.Services
 
         private Club UpdateCachedClubHistory(Club cachedClub)
         {
-            string formattedId = cachedClub.Id;
-            var updatedHistory = ScraperService.GetMetricsHistory(formattedId);
+            cachedClub.MetricsHistory = ScraperService.GetMetricsHistory(cachedClub.Id);
             cachedClub.HistoryExpiration = _dateHelpers.GetHistoryExpiration();
-
             DeleteClubHistoryFromDb(cachedClub);
-            cachedClub.MetricsHistory = ConvertHistory(formattedId, updatedHistory);
-
             return cachedClub;
         }
 
