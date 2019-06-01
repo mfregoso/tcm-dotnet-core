@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using TCM.Models.Domain;
 using TCM.Web.Entities;
 
@@ -6,7 +7,7 @@ namespace TCM.Web.Interfaces
 {
     public interface IScraperService
     {
-        ClubStatus GetClubStatus(string id);
-        List<MetricsHistory> GetMetricsHistory(string id);
+        Task<ClubStatus> GetClubStatus(string id);
+        Task<List<MetricsHistory>> GetMetricsHistory(string id);
     }
 }

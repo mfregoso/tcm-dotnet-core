@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using TCM.Models.Domain;
 using TCM.Web.Entities;
 using TCM.Web.Interfaces;
@@ -19,7 +20,7 @@ namespace TCM.Web.Services
         private readonly IHttpClientFactory _httpCF;
         private readonly HtmlParser parseHtml = new HtmlParser();
 
-        public ClubStatus GetClubStatus(string id)
+        public async Task<ClubStatus> GetClubStatus(string id)
         {
             string BaseUrl = "http://dashboards.toastmasters.org/ClubReport.aspx?id=";
             var clubStatus = new ClubStatus() { Id = id };
@@ -27,7 +28,7 @@ namespace TCM.Web.Services
 
             try
             {
-                var clubReport = client.GetStreamAsync(BaseUrl + id).Result;
+                var clubReport = await client.GetStreamAsync(BaseUrl + id);
                 var dataTable = parseHtml.ParseDocument(clubReport);
                 var statusBox = dataTable.QuerySelector(".tabBody > center > span");
                 if (statusBox == null || statusBox.TextContent.Contains("Suspended")) return clubStatus;
@@ -48,7 +49,7 @@ namespace TCM.Web.Services
             return clubStatus;
         }
 
-        public List<MetricsHistory> GetMetricsHistory(string id)
+        public async Task<List<MetricsHistory>> GetMetricsHistory(string id)
         {
             string lastMo = DateTime.Now.AddMonths(-1).Month.ToString();
             string BaseUrl = "https://www.marshalls.org/tmtools/DCP_Hist.cgi?mon=" + lastMo + "&club=";
@@ -57,7 +58,7 @@ namespace TCM.Web.Services
             List<MetricsHistory> clubHistory = new List<MetricsHistory>();
             try
             {
-                var tmTools = client.GetStringAsync(BaseUrl + id).Result;
+                var tmTools = await client.GetStreamAsync(BaseUrl + id);
                 var dataTable = parseHtml.ParseDocument(tmTools);
                 var dataRows = dataTable.QuerySelectorAll("table")[1];
                 var data = dataRows.QuerySelectorAll("tr").Skip(3);

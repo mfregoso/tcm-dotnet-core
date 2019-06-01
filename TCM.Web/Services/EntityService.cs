@@ -75,7 +75,7 @@ namespace TCM.Web.Services
 
         private async Task<Club> NewClubRequest(string formattedId)
         {
-            var requestedClub = _scraperService.GetClubStatus(formattedId);
+            var requestedClub = await _scraperService.GetClubStatus(formattedId);
             var newClubEntity = new Club()
             {
                 Id = formattedId,
@@ -87,7 +87,7 @@ namespace TCM.Web.Services
             {
                 newClubEntity.TMIExpiration = _dateHelpers.GetTmiExpiration();
                 newClubEntity.HistoryExpiration = _dateHelpers.GetHistoryExpiration();
-                newClubEntity.MetricsHistory = _scraperService.GetMetricsHistory(formattedId);
+                newClubEntity.MetricsHistory = await _scraperService.GetMetricsHistory(formattedId);
             }
 
             _context.Clubs.Add(newClubEntity);
@@ -99,8 +99,8 @@ namespace TCM.Web.Services
         private async Task<Club> UpdateCachedClubData(Club cachedClub, bool tmiExpired, bool historyExpired)
         {
             if (!tmiExpired && !historyExpired) return cachedClub;
-            if (tmiExpired) cachedClub = UpdateCachedClubStatus(cachedClub);
-            if (historyExpired) cachedClub = UpdateCachedClubHistory(cachedClub);
+            if (tmiExpired) cachedClub = await UpdateCachedClubStatus(cachedClub);
+            if (historyExpired) cachedClub = await UpdateCachedClubHistory(cachedClub);
 
             _context.Entry(cachedClub).State = EntityState.Modified;
             try
@@ -114,9 +114,9 @@ namespace TCM.Web.Services
             return cachedClub;
         }
 
-        private Club UpdateCachedClubStatus(Club cachedClub)
+        private async Task<Club> UpdateCachedClubStatus(Club cachedClub)
         {
-            var currData = _scraperService.GetClubStatus(cachedClub.Id);
+            var currData = await _scraperService.GetClubStatus(cachedClub.Id);
 
             cachedClub.Exists = currData.Exists;
             cachedClub.MembershipCount = currData.MembershipCount;
@@ -125,18 +125,18 @@ namespace TCM.Web.Services
             return cachedClub;
         }
 
-        private Club UpdateCachedClubHistory(Club cachedClub)
+        private async Task<Club> UpdateCachedClubHistory(Club cachedClub)
         {
-            cachedClub.MetricsHistory = _scraperService.GetMetricsHistory(cachedClub.Id);
-            cachedClub.HistoryExpiration = _dateHelpers.GetHistoryExpiration();
             DeleteClubHistoryFromDb(cachedClub);
+            cachedClub.MetricsHistory = await _scraperService.GetMetricsHistory(cachedClub.Id);
+            cachedClub.HistoryExpiration = _dateHelpers.GetHistoryExpiration();
             return cachedClub;
         }
 
         private void DeleteClubHistoryFromDb(Club cachedClub)
         {
             var oldEntries = cachedClub.MetricsHistory.ToList();
-            Task.Run(() => _context.MetricsHistory.RemoveRange(oldEntries)).ConfigureAwait(false);
+            _context.MetricsHistory.RemoveRange(oldEntries);
         }
 
         private string GetDataSourceName(bool tmiExpired = false, bool historyExpired = false)
