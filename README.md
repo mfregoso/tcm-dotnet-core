@@ -1,3 +1,5 @@
+[![Build Status](https://dev.azure.com/mfregoso/TCM%20Core/_apis/build/status/mfregoso.tcm-dotnet-core?branchName=master)](https://dev.azure.com/mfregoso/TCM%20Core/_build/latest?definitionId=5&branchName=master)
+
 # Toastmasters Club Metrics
 ## A better way to find the club that's right for you
 
