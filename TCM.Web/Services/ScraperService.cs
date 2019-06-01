@@ -11,33 +11,38 @@ namespace TCM.Web.Services
 {
     public class ScraperService : IScraperService
     {
+        public ScraperService(IHttpClientFactory httpFactory)
+        {
+            _httpCF = httpFactory;
+        }
+
+        private readonly IHttpClientFactory _httpCF;
+        private readonly HtmlParser parseHtml = new HtmlParser();
+
         public ClubStatus GetClubStatus(string id)
         {
             string BaseUrl = "http://dashboards.toastmasters.org/ClubReport.aspx?id=";
             var clubStatus = new ClubStatus() { Id = id };
+            var client = _httpCF.CreateClient();
 
-            using (var client = new HttpClient())
+            try
             {
-                try
+                var clubReport = client.GetStreamAsync(BaseUrl + id).Result;
+                var dataTable = parseHtml.ParseDocument(clubReport);
+                var statusBox = dataTable.QuerySelector(".tabBody > center > span");
+                if (statusBox == null || statusBox.TextContent.Contains("Suspended")) return clubStatus;
+                else
                 {
-                    var clubReport = client.GetStreamAsync(BaseUrl + id).Result;
-                    var parseHtml = new HtmlParser();
-                    var dataTable = parseHtml.ParseDocument(clubReport);
-                    var statusBox = dataTable.QuerySelector(".tabBody > center > span");
-                    if (statusBox == null || statusBox.TextContent.Contains("Suspended")) return clubStatus;
-                    else
-                    {
-                        clubStatus.Exists = true;
-                        var dataColumn = dataTable.QuerySelectorAll("table.clubStatusChart")[1];
-                        var dataRow = dataColumn.QuerySelectorAll("table tr")[1];
-                        var data = dataRow.QuerySelectorAll("td.chart_table_big_numbers")[1];
-                        clubStatus.MembershipCount = int.TryParse(data.TextContent, out int mCt) ? mCt : (int?)null;
-                    }
+                    clubStatus.Exists = true;
+                    var dataColumn = dataTable.QuerySelectorAll("table.clubStatusChart")[1];
+                    var dataRow = dataColumn.QuerySelectorAll("table tr")[1];
+                    var data = dataRow.QuerySelectorAll("td.chart_table_big_numbers")[1];
+                    clubStatus.MembershipCount = int.TryParse(data.TextContent, out int mCt) ? mCt : (int?)null;
                 }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine(ex);
-                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
             }
 
             return clubStatus;
@@ -47,36 +52,33 @@ namespace TCM.Web.Services
         {
             string lastMo = DateTime.Now.AddMonths(-1).Month.ToString();
             string BaseUrl = "https://www.marshalls.org/tmtools/DCP_Hist.cgi?mon=" + lastMo + "&club=";
-
-            using (var client = new HttpClient())
+            var client = _httpCF.CreateClient();
+            
+            List<MetricsHistory> clubHistory = new List<MetricsHistory>();
+            try
             {
-                List<MetricsHistory> clubHistory = new List<MetricsHistory>();
-                try
+                var tmTools = client.GetStringAsync(BaseUrl + id).Result;
+                var dataTable = parseHtml.ParseDocument(tmTools);
+                var dataRows = dataTable.QuerySelectorAll("table")[1];
+                var data = dataRows.QuerySelectorAll("tr").Skip(3);
+                foreach (var row in data)
                 {
-                    var tmTools = client.GetStringAsync(BaseUrl + id).Result;
-                    var parseHtml = new HtmlParser();
-                    var dataTable = parseHtml.ParseDocument(tmTools);
-                    var dataRows = dataTable.QuerySelectorAll("table")[1];
-                    var data = dataRows.QuerySelectorAll("tr").Skip(3);
-                    foreach (var row in data)
-                    {
-                        MetricsHistory metrics = new MetricsHistory();
-                        bool hasMembers = int.TryParse(row.ChildNodes[7].TextContent, out int members);
-                        bool hasGoals = int.TryParse(row.ChildNodes[8].TextContent, out int goals);
-                        metrics.ClubId = id;
-                        metrics.MonthEnd = row.ChildNodes[0].TextContent;
-                        metrics.Members = hasMembers ? members : (int?)null;
-                        metrics.Goals = hasGoals ? goals : (int?)null;
+                    MetricsHistory metrics = new MetricsHistory();
+                    bool hasMembers = int.TryParse(row.ChildNodes[7].TextContent, out int members);
+                    bool hasGoals = int.TryParse(row.ChildNodes[8].TextContent, out int goals);
+                    metrics.ClubId = id;
+                    metrics.MonthEnd = row.ChildNodes[0].TextContent;
+                    metrics.Members = hasMembers ? members : (int?)null;
+                    metrics.Goals = hasGoals ? goals : (int?)null;
 
-                        clubHistory.Add(metrics);
-                    }
+                    clubHistory.Add(metrics);
                 }
-                catch
-                {
-                    System.Diagnostics.Debug.WriteLine("tmtools server error");
-                }
-                return clubHistory;
             }
+            catch
+            {
+                System.Diagnostics.Debug.WriteLine("tmtools server error");
+            }
+            return clubHistory;
         }
     }
 }
