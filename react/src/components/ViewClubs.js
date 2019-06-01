@@ -35,8 +35,8 @@ class ViewClubs extends Component {
 
   searchClubs = (q, radius, lat, lng) => {
     FindNearbyClubs(q, radius, lat, lng).then(resp => {
-      let rawList = resp.data.Clubs;
-      let clubs = this.assignClubIds(rawList);
+      const openClubs = this.removeProspective(resp.data.Clubs);
+      let clubs = this.assignClubIds(openClubs);
       this.setState({ clubs });
     });
   };
@@ -105,6 +105,8 @@ class ViewClubs extends Component {
       })
       .catch(error => console.error("Error", error));
   };
+
+  removeProspective = clubs => clubs.filter((c) => !c.IsProspective);
 
   assignClubIds = clubs => {
     let assignedIds = clubs.map(club => {
