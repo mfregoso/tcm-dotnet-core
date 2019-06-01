@@ -13,11 +13,13 @@ namespace TCM.Web.Services
     {
         private readonly ClubDataContext _context;
         private readonly IDateHelpers _dateHelpers;
+        private readonly IScraperService _scraperService;
 
-        public EntityService(ClubDataContext context, IDateHelpers dateHelpers)
+        public EntityService(ClubDataContext context, IDateHelpers dateHelpers, IScraperService scraperService)
         {
             _context = context;
             _dateHelpers = dateHelpers;
+            _scraperService = scraperService;
         }
 
         public bool ClubExists(string id)
@@ -73,7 +75,7 @@ namespace TCM.Web.Services
 
         private async Task<Club> NewClubRequest(string formattedId)
         {
-            var requestedClub = ScraperService.GetClubStatus(formattedId);
+            var requestedClub = _scraperService.GetClubStatus(formattedId);
             var newClubEntity = new Club()
             {
                 Id = formattedId,
@@ -85,7 +87,7 @@ namespace TCM.Web.Services
             {
                 newClubEntity.TMIExpiration = _dateHelpers.GetTmiExpiration();
                 newClubEntity.HistoryExpiration = _dateHelpers.GetHistoryExpiration();
-                newClubEntity.MetricsHistory = ScraperService.GetMetricsHistory(formattedId);
+                newClubEntity.MetricsHistory = _scraperService.GetMetricsHistory(formattedId);
             }
 
             _context.Clubs.Add(newClubEntity);
@@ -114,7 +116,7 @@ namespace TCM.Web.Services
 
         private Club UpdateCachedClubStatus(Club cachedClub)
         {
-            var currData = ScraperService.GetClubStatus(cachedClub.Id);
+            var currData = _scraperService.GetClubStatus(cachedClub.Id);
 
             cachedClub.Exists = currData.Exists;
             cachedClub.MembershipCount = currData.MembershipCount;
@@ -125,7 +127,7 @@ namespace TCM.Web.Services
 
         private Club UpdateCachedClubHistory(Club cachedClub)
         {
-            cachedClub.MetricsHistory = ScraperService.GetMetricsHistory(cachedClub.Id);
+            cachedClub.MetricsHistory = _scraperService.GetMetricsHistory(cachedClub.Id);
             cachedClub.HistoryExpiration = _dateHelpers.GetHistoryExpiration();
             DeleteClubHistoryFromDb(cachedClub);
             return cachedClub;

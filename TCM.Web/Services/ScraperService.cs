@@ -5,12 +5,13 @@ using System.Linq;
 using System.Net.Http;
 using TCM.Models.Domain;
 using TCM.Web.Entities;
+using TCM.Web.Interfaces;
 
 namespace TCM.Web.Services
 {
-    public class ScraperService
+    public class ScraperService : IScraperService
     {
-        public static ClubStatus GetClubStatus(string id)
+        public ClubStatus GetClubStatus(string id)
         {
             string BaseUrl = "http://dashboards.toastmasters.org/ClubReport.aspx?id=";
             var clubStatus = new ClubStatus() { Id = id };
@@ -42,7 +43,7 @@ namespace TCM.Web.Services
             return clubStatus;
         }
 
-        public static List<MetricsHistory> GetMetricsHistory(string id)
+        public List<MetricsHistory> GetMetricsHistory(string id)
         {
             string lastMo = DateTime.Now.AddMonths(-1).Month.ToString();
             string BaseUrl = "https://www.marshalls.org/tmtools/DCP_Hist.cgi?mon=" + lastMo + "&club=";
