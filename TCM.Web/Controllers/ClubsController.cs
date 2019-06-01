@@ -31,8 +31,10 @@ namespace TCM.Web.Controllers
         {
             if (!IdHelpers.IsValid(id)) return BadRequest(new { message = "Invalid club number" }); //NotFound()?
             string formattedId = IdHelpers.FormatId(id);
+            var clubResp = await _entityService.ClubReqHandler(formattedId);
 
-            return await _entityService.ClubReqHandler(formattedId);
+            if (!clubResp.Info.Exists) return BadRequest(new { message = "Club does not exist" });
+            return clubResp;
         }
 
         [HttpGet("search")]
